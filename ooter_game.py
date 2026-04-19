@@ -35,7 +35,6 @@ window.fill(back)
 game = True
 finish = False
 clock = clock.Clock()
-FPS = 60
 
 # 1 мяч, 2 палки
 racket1 = Player('racket.png', 30, 200, 4, 50, 150)
@@ -46,3 +45,23 @@ font.init()
 font = font.Font(None, 35)
 lose1 = font.render( '1 ИГРОК ЛОХ', True, (180, 0, 0))
 lose2 = font.render( '2 ИГРОК ЛОХ', True, (180, 0, 0))
+
+speed_x = 3
+speed_y = 3
+
+while game:
+    for e in event.get():
+        if e.type == QUIT:
+            game = False
+    if finish != True:
+        window.fill()
+        racket1.update_l()
+        racket2.update_r()
+        ball.rect.x += speed_x
+        ball.rect.y += speed_y
+
+        racket1.reset()
+        racket2.reset()
+        ball.reset()
+    display.update()
+    closk.tick(60)
