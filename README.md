@@ -1,2 +1,2 @@
-# pang
+# Kalashnikova
 123
