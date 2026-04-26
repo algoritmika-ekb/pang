@@ -31,23 +31,69 @@ back = (200, 255, 255)
 window = display.set_mode((600, 500))
 display.set_caption('Пинг-понг')
 window.fill(back)
-game = True
 clock = time.Clock()
 
-racket1 = Player('Coin.png', 30, 200, 4, 50, 150) # создание ракеток и мяча
-racket2 = Player('Coin.png', 520, 200, 4, 50, 150)
+game = True
+finish = False
+speed_x = 3 # скорасть мячика
+speed_y = 3
+
+racket1 = Player('Coin.png', 30, 185, 4, 50, 150) # создание ракеток и мяча
+racket2 = Player('Coin.png', 520, 185, 4, 50, 150)
 ball = GameSprite('Heart.png', 275, 225, 4, 50, 50)
+
+def restart_text():
+    global speed_x, speed_y, finish
+
+    ball.rect.x = 275
+    ball.rect.y = 225
+    racket1.rect.x = 200
+    racket1.rect.y = 200
+    
+    speed_x = 3
+    speed_y = 3
+    
+    finish = False
+
+font.init()
+font = font.Font(None, 35) # красивые букавки проигрыша
+lose1 = font.render('ИГРОК 1 ЛОХ', True, (180, 0, 0))
+lose2 = font.render('ИГРОК 2 ЛОХ', True, (180, 0, 0))
+restart_text = font.render('R нажми', True, (0, 0, 0))
 
 while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
-    window.fill(back)
-    racket1.update_l()
-    racket2.update_r()
-    racket1.reset()
-    racket2.reset()
-    ball.reset()
+        if e.type == KEYDOWN:
+            if e.key == K_r and finish == True:
+                restart_game()
+
+    if finish != True:
+        window.fill(back)
+
+        racket1.update_l()
+        racket2.update_r()
+        ball.rect.x += speed_x # скорость движения мячика
+        ball.rect.y += speed_y
+
+        if ball.rect.y > 450 or ball.rect.y < 0: # отскок от потолка и пола
+            speed_y *= -1 # меняем векор полета
+        if sprite.collide_rect(racket1, ball) or sprite.collide_rect(racket2, ball): # отскок от ракеток
+            speed_x *= -1 # меняем векор полета
+
+        if ball.rect.x < 0: # проигрыш об левую и правую стены
+            finish = True
+            window.blit(lose1, (220, 230))
+            window.blit(restart_text, (250, 450))
+        if ball.rect.x > 550:
+            finish = True
+            window.blit(lose2, (220, 230))
+            window.blit(restart_text, (250, 450))
+
+        racket1.reset()
+        racket2.reset()
+        ball.reset()
 
     display.update()
     clock.tick(60)
